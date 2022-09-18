@@ -12,7 +12,7 @@ import com.rabbitmq.client.MessageProperties;
  */
 public class NewTask {
     //设置类并命名队列：
-    private final static String QUEUE_NAME = "hello";
+    private static final String TASK_QUEUE_NAME = "task_queue";
 
     public static void main(String[] args) throws Exception {
         //创建到服务器的连接
@@ -23,33 +23,21 @@ public class NewTask {
         factory.setUsername("admin");
         factory.setPassword("123456");
         factory.setVirtualHost("/admin");
-        //创建一个通道（通过获取连接对象创建）
-        /**
-         * 我们可以使用 try-with-resources 语句，
-         * 因为Connection和Channel都实现了java.io.Closeable。
-         * 这样我们就不需要在代码中显式地关闭它们
-         */
-
         try (Connection connection = factory.newConnection();
              Channel channel = connection.createChannel()) {
-            //声明一个队列供我们发送
-            boolean durable = true;
-            channel.queueDeclare("task_queue", durable, false, false, null);
-            /**
-             * 我们将稍微修改前面示例中的Send.java代码，以允许从命令行发送任意消息。
-             */
-            //创建消息
-            String message = String.join(" " , args);
-//            String message = String.join(" " , "NewTask", "First message.");
-//            String message = String.join(" " , "NewTask", "Second message..");
-//            String message = String.join(" " , "NewTask", "Third message...");
-//            String message = String.join(" " , "NewTask", "Fourth message....");
-//            String message = String.join(" " , "NewTask", "Fifth message.....");
-            //将消息发布到队列中
-            channel.basicPublish("", "task_queue",
-                    MessageProperties.PERSISTENT_TEXT_PLAIN,
-                    message.getBytes());
-            System.out.println(" [x] Sent '" + message + "'");
+            channel.queueDeclare(TASK_QUEUE_NAME, true, false, false, null);
+
+            for (int i = 1; i <= 20; i++) {
+                String message = "Hello World! ----- " + i;
+                // 将产生的消息放入队列
+                channel.basicPublish("", TASK_QUEUE_NAME,
+                        MessageProperties.PERSISTENT_TEXT_PLAIN,
+                        message.getBytes("UTF-8"));
+                System.out.println(" [x] Sent '" + message + "'");
+            }
+
+
         }
     }
+
 }

@@ -10,7 +10,7 @@ import com.rabbitmq.client.DeliverCallback;
  * 默认情况下，手动消息确认是打开的。在前面的示例中，我们通过autoAck=true 标志明确地关闭了它们。
  * 一旦我们完成了一项任务，是时候将此标志设置为false并从工作人员那里发送适当的确认。
  */
-public class Worker01 {
+public class Worker02 {
     private static final String TASK_QUEUE_NAME = "task_queue";
 
     public static void main(String[] args) throws Exception {
@@ -47,7 +47,7 @@ public class Worker01 {
         for (char ch : task.toCharArray()) {
             if (ch == '.') {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(4000);
                 } catch (InterruptedException _ignored) {
                     Thread.currentThread().interrupt();
                 }
